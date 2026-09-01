@@ -8,6 +8,7 @@
 #include "gui.h"
 #include "bmp.h"
 #include "image.h"
+#include "undo.h"
 #include "gui_image.h"
 #include "gui_callbacks.h"
 #include "gui_crop.h"
@@ -36,8 +37,14 @@ int run_gui(void)
     Ihandle *rotate_button;
     Ihandle *crop_button;
     Ihandle *apply_crop_button;
+    Ihandle *undo_button;
     Ihandle *layout;
     Ihandle *dialog;
+    Ihandle *button_panel;
+    Ihandle *file_group;
+    Ihandle *edit_group;
+    Ihandle *transform_group;
+    Ihandle *crop_group;
 
 
     IupOpen(NULL, NULL);
@@ -69,6 +76,17 @@ int run_gui(void)
         save_button,
         "ACTION",
         (Icallback)save_callback
+    );
+
+    undo_button = IupButton(
+        "Undo",
+        NULL
+    );
+
+    IupSetCallback(
+        undo_button,
+        "ACTION",
+        (Icallback)undo_callback
     );
 
     grayscale_button = IupButton(
@@ -190,7 +208,7 @@ int run_gui(void)
     IupSetAttribute(
         gui.image_canvas,
         "RASTERSIZE",
-        "600x450"
+        "700x500"
     );
 
     IupSetAttribute(
@@ -199,25 +217,112 @@ int run_gui(void)
         "ACENTER:ACENTER"
     );
 
-    
+    IupSetAttribute(open_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(save_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(undo_button, "RASTERSIZE", "180x35");
 
-    
+    IupSetAttribute(grayscale_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(invert_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(brightness_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(sharpen_button, "RASTERSIZE", "180x35");
+
+    IupSetAttribute(horizontal_flip_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(vertical_flip_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(blur_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(rotate_button, "RASTERSIZE", "180x35");
+
+    IupSetAttribute(crop_button, "RASTERSIZE", "180x35");
+    IupSetAttribute(apply_crop_button, "RASTERSIZE", "180x35");
+
+    file_group = IupFrame(
+        IupVbox(
+            open_button,
+            save_button,
+            NULL
+        )
+    );
+
+    IupSetAttribute(file_group, "TITLE", "File");
+    IupSetAttribute(file_group, "MARGIN", "10x10");
+
     /*
-     * Main layout.
-     */
-    layout = IupVbox(
-        open_button,
-        save_button,
-        grayscale_button,
-        invert_button,
-        brightness_button,
-        sharpen_button,
-        horizontal_flip_button,
-        vertical_flip_button,
-        blur_button,
-        rotate_button,
-        crop_button,
-        apply_crop_button,
+    * Edit block.
+    */
+    edit_group = IupFrame(
+        IupVbox(
+            undo_button,
+            grayscale_button,
+            invert_button,
+            brightness_button,
+            sharpen_button,
+            blur_button,
+            NULL
+        )
+    );
+
+    IupSetAttribute(edit_group, "TITLE", "Edit");
+    IupSetAttribute(edit_group, "MARGIN", "10x10");
+
+    /*
+    * Transform block.
+    */
+    transform_group = IupFrame(
+        IupVbox(
+            horizontal_flip_button,
+            vertical_flip_button,
+            rotate_button,
+            NULL
+        )
+    );
+
+    IupSetAttribute(transform_group, "TITLE", "Transform");
+    IupSetAttribute(transform_group, "MARGIN", "10x10");
+
+    /*
+    * Crop block.
+    */
+    crop_group = IupFrame(
+        IupVbox(
+            crop_button,
+            apply_crop_button,
+            NULL
+        )
+    );
+
+    IupSetAttribute(crop_group, "TITLE", "Crop");
+    IupSetAttribute(crop_group, "MARGIN", "10x10");
+
+
+    /*
+    * Left panel containing all buttons.
+    */
+    button_panel = IupVbox(
+        file_group,
+        edit_group,
+        transform_group,
+        crop_group,
+        NULL
+    );
+
+    IupSetAttribute(
+        button_panel,
+        "MARGIN",
+        "10x10"
+    );
+
+    IupSetAttribute(
+        button_panel,
+        "GAP",
+        "8"
+    );
+
+
+    /*
+    * Main layout:
+    * buttons on the left, image on the right.
+    */
+    layout = IupHbox(
+        button_panel,
         gui.image_canvas,
         NULL
     );
@@ -231,7 +336,7 @@ int run_gui(void)
     IupSetAttribute(
         layout,
         "GAP",
-        "10"
+        "20"
     );
 
     
@@ -283,6 +388,8 @@ int run_gui(void)
 
     if (gui.current_image != NULL)
         destroy_image(gui.current_image);
+
+    clear_undo();    
 
     IupDestroy(dialog);
 

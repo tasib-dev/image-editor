@@ -13,5 +13,6 @@ int vertical_flip_callback(Ihandle *self);
 int blur_callback(Ihandle *self);
 int rotate_callback(Ihandle *self);
 int brightness_callback(Ihandle *self);
+int undo_callback(Ihandle *self);
 
 #endif

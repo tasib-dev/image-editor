@@ -6,10 +6,10 @@
 /* Save the current image state */
 void save_undo(const Image *image);
 
-/* Restore the previously saved image state */
+/* Restore the most recent saved image state */
 int undo(Image *image);
 
-/* Clear the saved undo state */
+/* Clear all saved undo states */
 void clear_undo(void);
 
 #endif

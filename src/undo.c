@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include "undo.h"
 
-static Image *previous_image = NULL;
+#define UNDO_LEVELS 3
+
+static Image *undo_history[UNDO_LEVELS] = {NULL, NULL, NULL};
 
 void save_undo(const Image *image)
 {
@@ -10,33 +12,60 @@ void save_undo(const Image *image)
         return;
     }
 
-    /* Remove the old saved state */
-    if (previous_image != NULL)
+    /*
+     * Remove the oldest undo state.
+     */
+    if (undo_history[UNDO_LEVELS - 1] != NULL)
     {
-        destroy_image(previous_image);
-        previous_image = NULL;
+        destroy_image(undo_history[UNDO_LEVELS - 1]);
+        undo_history[UNDO_LEVELS - 1] = NULL;
     }
 
-    /* Make an independent copy */
-    previous_image = copy_image(image);
+    /*
+     * Shift existing states toward the oldest position.
+     *
+     * history[0] = newest
+     * history[1] = second newest
+     * history[2] = oldest
+     */
+    for (int i = UNDO_LEVELS - 1; i > 0; i--)
+    {
+        undo_history[i] = undo_history[i - 1];
+    }
+
+    /*
+     * Save an independent copy as the newest state.
+     */
+    undo_history[0] = copy_image(image);
 }
 
 int undo(Image *image)
 {
     Image *temp;
 
-    if (image == NULL || previous_image == NULL)
+    if (image == NULL || undo_history[0] == NULL)
     {
         return 0;
     }
 
     /*
-     * Save the current image data temporarily,
-     * because we are going to replace it.
+     * Take the newest saved state.
      */
-    temp = previous_image;
-    previous_image = NULL;
+    temp = undo_history[0];
 
+    /*
+     * Shift the remaining states forward.
+     */
+    for (int i = 0; i < UNDO_LEVELS - 1; i++)
+    {
+        undo_history[i] = undo_history[i + 1];
+    }
+
+    undo_history[UNDO_LEVELS - 1] = NULL;
+
+    /*
+     * Replace the current image with the saved image.
+     */
     free(image->data);
 
     image->width = temp->width;
@@ -50,9 +79,12 @@ int undo(Image *image)
 
 void clear_undo(void)
 {
-    if (previous_image != NULL)
+    for (int i = 0; i < UNDO_LEVELS; i++)
     {
-        destroy_image(previous_image);
-        previous_image = NULL;
+        if (undo_history[i] != NULL)
+        {
+            destroy_image(undo_history[i]);
+            undo_history[i] = NULL;
+        }
     }
 }

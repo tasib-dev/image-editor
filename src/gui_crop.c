@@ -4,6 +4,7 @@
 #include "gui.h"
 #include "gui_crop.h"
 #include "gui_image.h"
+#include "undo.h"
 #include "operations/crop.h"
 
 
@@ -112,7 +113,7 @@ int apply_crop_callback(Ihandle *self)
     }
 
     
-
+    save_undo(gui.current_image);
     apply_crop(gui.current_image, img_x0, img_y0, crop_w, crop_h);
 
     gui.crop_mode = 0;

@@ -12,6 +12,7 @@
 #include "operations/blur.h"
 #include "operations/rotate.h"
 #include "operations/brightness.h"
+#include "undo.h"
 #include "image.h"
 
 static void clear_brightness_base(void);
@@ -138,6 +139,7 @@ int open_callback(Ihandle *self)
     if (gui.current_iup_image != NULL)
         IupDestroy(gui.current_iup_image);
 
+    clear_undo();
 
     /*
      * Store new image.
@@ -294,6 +296,9 @@ int grayscale_callback(Ihandle *self)
 
     clear_brightness_base();
 
+
+    save_undo(gui.current_image);
+
     apply_grayscale(gui.current_image);
 
     update_image_display(&gui);
@@ -325,7 +330,7 @@ int invert_callback(Ihandle *self)
     }
 
     
-
+    save_undo(gui.current_image);
     apply_invert(gui.current_image);
 
     update_image_display(&gui);
@@ -348,7 +353,7 @@ int sharpen_callback(Ihandle *self)
     }
 
     
-
+    save_undo(gui.current_image);
     apply_sharpen(gui.current_image);
 
     update_image_display(&gui);
@@ -371,7 +376,7 @@ int horizontal_flip_callback(Ihandle *self)
     }
 
     
-
+    save_undo(gui.current_image);
     apply_horizontal_flip(gui.current_image);
 
     update_image_display(&gui);
@@ -394,7 +399,7 @@ int vertical_flip_callback(Ihandle *self)
         return IUP_DEFAULT;
     }
 
-    
+    save_undo(gui.current_image);
 
     apply_vertical_flip(gui.current_image);
 
@@ -417,7 +422,7 @@ int blur_callback(Ihandle *self)
         return IUP_DEFAULT;
     }
 
-
+    save_undo(gui.current_image);
     apply_blur(gui.current_image);
 
     update_image_display(&gui);
@@ -439,7 +444,7 @@ int rotate_callback(Ihandle *self)
         return IUP_DEFAULT;
     }
     
-
+    save_undo(gui.current_image);
     apply_rotate_90(gui.current_image);
 
     update_image_display(&gui);
@@ -492,6 +497,7 @@ int brightness_callback(Ihandle *self)
     {
         return IUP_DEFAULT;
     }
+    save_undo(gui.current_image);
 
     /*
      * Restore the original state before applying
@@ -506,6 +512,37 @@ int brightness_callback(Ihandle *self)
     );
 
     apply_brightness(gui.current_image, amount);
+
+    update_image_display(&gui);
+
+    return IUP_DEFAULT;
+}
+
+int undo_callback(Ihandle *self)
+{
+    (void)self;
+
+    if (gui.current_image == NULL)
+    {
+        IupMessage(
+            "Error",
+            "Please open an image first."
+        );
+
+        return IUP_DEFAULT;
+    }
+
+    if (!undo(gui.current_image))
+    {
+        IupMessage(
+            "Error",
+            "Nothing to undo."
+        );
+
+        return IUP_DEFAULT;
+    }
+
+    clear_brightness_base();
 
     update_image_display(&gui);
 
