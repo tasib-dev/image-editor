@@ -1,12 +1,12 @@
-Image Editor
+# Image Editor
 
-A desktop image manipulation application written in C using the IUP (Portable User Interface) toolkit.
+A desktop image manipulation application written in **C** using the **IUP (Portable User Interface) toolkit**.
 
-This project was developed as a structured programming project to demonstrate the practical use of functions, structures, pointers, arrays, dynamic memory allocation, file handling, modular programming, and GUI programming.
+This project was developed as a structured programming project to demonstrate the practical use of functions, structures, pointers, arrays, dynamic memory allocation, file handling, and modular programming.
 
-The application works with 24-bit uncompressed BMP images and provides several image manipulation operations through a graphical user interface.
+The application works with **24-bit uncompressed BMP images** and provides several image manipulation operations through a graphical user interface.
 
-Features
+## Features
 
 - Open 24-bit uncompressed BMP images
 - Display images through a graphical interface
@@ -23,7 +23,7 @@ Features
 - Multi-step undo
 - Error handling for invalid operations and inputs
 
-Technologies
+## Technologies
 
 - C
 - IUP GUI Toolkit
@@ -31,8 +31,9 @@ Technologies
 - Make
 - BMP image format
 
-Project Structure
+## Project Structure
 
+```text
 image-editor/
 ├── include/
 │   ├── operations/
@@ -65,102 +66,117 @@ image-editor/
 ├── .gitignore
 ├── Makefile
 └── README.md
+```
 
 The project is organized into separate modules for image management, BMP file handling, GUI functionality, callbacks, dialogs, cropping, undo functionality, utilities, and image-processing operations.
 
-Image Format
+## Image Format
 
 The editor supports:
 
 - 24-bit uncompressed BMP
-- ".bmp" input files
-- ".bmp" output files
+- `.bmp` input files
+- `.bmp` output files
 
 Other image formats such as PNG, JPEG, and GIF are not supported.
 
-Image Representation
+## Image Representation
 
 The image is represented in memory using structures and dynamically allocated pixel data.
 
 A pixel contains three color components:
 
+```c
 typedef struct {
     unsigned char r;
     unsigned char g;
     unsigned char b;
 } Pixel;
+```
 
 The image contains information such as its width, height, and dynamically allocated pixel array.
 
-Pixels can then be accessed directly using their coordinates, allowing the image-processing algorithms to manipulate the individual RGB values.
+Pixels can then be accessed directly using their coordinates, allowing the image-processing algorithms to manipulate individual RGB values.
 
-Image Processing Operations
+## Image Processing Operations
 
-Grayscale
+### Grayscale
 
 Converts a color image into grayscale using a weighted combination of the RGB channels:
 
+```text
 Gray = 0.299R + 0.587G + 0.114B
+```
 
 The calculated grayscale value is assigned to all three color channels.
 
-Brightness
+### Brightness
 
 Adjusts the brightness of the image by adding a user-specified value to the RGB components.
 
 The resulting values are restricted to the valid range:
 
+```text
 0 to 255
+```
 
-Invert
+### Invert
 
 Creates a negative-like version of the image:
 
+```text
 R = 255 - R
 G = 255 - G
 B = 255 - B
+```
 
-Horizontal Flip
+### Horizontal Flip
 
 Mirrors the image from left to right by exchanging pixels across the vertical axis.
 
+```text
 (x, y) → (width - 1 - x, y)
+```
 
-Vertical Flip
+### Vertical Flip
 
 Mirrors the image from top to bottom by exchanging pixels across the horizontal axis.
 
+```text
 (x, y) → (x, height - 1 - y)
+```
 
-Rotate 90 Degrees
+### Rotate 90 Degrees
 
 Rotates the image 90 degrees clockwise.
 
 Since the dimensions change during rotation, a new image is created with the width and height exchanged.
 
-Crop
+### Crop
 
 Allows the user to select a rectangular region of the image and create a new image containing the selected area.
 
 The crop selection is kept within the image boundaries.
 
-Blur
+### Blur
 
 Applies a 3×3 averaging filter to the image.
 
 Each output pixel is calculated from the surrounding pixels. A separate image buffer is used during the operation so that newly calculated pixels do not affect subsequent calculations.
 
-Sharpen
+### Sharpen
 
 Applies a 3×3 convolution kernel:
 
+```text
  0  -1   0
 -1   5  -1
  0  -1   0
+```
 
 The kernel emphasizes differences between a pixel and its surrounding pixels, producing a sharper appearance.
 
-Undo System
+## Undo System
 
 The editor includes an undo system that stores previous image states before image-processing operations are applied.
 
@@ -168,21 +184,21 @@ This allows the user to revert changes without having to reopen the original ima
 
 The undo functionality is implemented separately from the GUI and image-processing modules.
 
-GUI Architecture
+## GUI Architecture
 
 The graphical interface is implemented using IUP.
 
 The GUI is separated into several components:
 
-- "gui.c" — main GUI construction and application window
-- "gui_callbacks.c" — callbacks for user actions
-- "gui_crop.c" — crop interaction
-- "gui_dialogs.c" — dialogs used by the application
-- "gui_image.c" — image display and GUI image handling
+- `gui.c` — main GUI construction and application window
+- `gui_callbacks.c` — callbacks for user actions
+- `gui_crop.c` — crop interaction
+- `gui_dialogs.c` — dialogs used by the application
+- `gui_image.c` — image display and GUI image handling
 
 This separation keeps GUI logic independent from the actual image-processing algorithms.
 
-Image Management
+## Image Management
 
 Image creation, copying, and destruction are handled separately from the GUI.
 
@@ -197,38 +213,46 @@ The image management module is responsible for:
 
 This helps prevent unnecessary duplication of image-management logic throughout the application.
 
-BMP Handling
+## BMP Handling
 
 BMP loading and saving are implemented in the BMP module.
 
+```text
 bmp.c
 bmp.h
+```
 
 The BMP module handles reading image data from BMP files and writing modified image data back to BMP files.
 
-The image-processing algorithms operate on the application's internal "Image" representation rather than directly manipulating the BMP file.
+The image-processing algorithms operate on the application's internal `Image` representation rather than directly manipulating the BMP file.
 
-Build System
+## Build System
 
-The project uses a "Makefile" for compilation.
+The project uses a `Makefile` for compilation.
 
 The Makefile uses:
 
+```text
 GCC
 IUP
 -Wall
 -Wextra
+```
 
 It automatically includes C files from:
 
+```text
 src/
 src/operations/
+```
 
 The generated executable is:
 
+```text
 image-editor
+```
 
-Requirements
+## Requirements
 
 Before compiling, install:
 
@@ -238,42 +262,56 @@ Before compiling, install:
 
 The current Makefile expects IUP to be installed under:
 
+```text
 /opt/iup
+```
 
-If IUP is installed somewhere else, update the include and library paths in the "Makefile".
+If IUP is installed somewhere else, update the include and library paths in the `Makefile`.
 
-Compilation
+## Compilation
 
 Clone the repository:
 
+```bash
 git clone https://github.com/tasib-dev/image-editor.git
 cd image-editor
+```
 
 Build the project:
 
+```bash
 make
+```
 
 This creates the executable:
 
+```text
 ./image-editor
+```
 
-Running
+## Running
 
 Run the application using:
 
+```bash
 make run
+```
 
 or directly:
 
+```bash
 ./image-editor
+```
 
-Cleaning Build Files
+## Cleaning Build Files
 
 To remove compiled object files and the executable:
 
+```bash
 make clean
+```
 
-Typical Workflow
+## Typical Workflow
 
 1. Start the application.
 2. Open a 24-bit BMP image.
@@ -283,7 +321,7 @@ Typical Workflow
 6. Continue editing or use Undo to revert a change.
 7. Save the final image as a BMP file.
 
-Concepts Demonstrated
+## Concepts Demonstrated
 
 This project demonstrates practical implementation of:
 
@@ -303,20 +341,20 @@ This project demonstrates practical implementation of:
 - Memory management
 - Error handling
 
-Educational Purpose
+## Educational Purpose
 
 The primary purpose of this project is to demonstrate how fundamental C programming concepts can be combined to create a practical graphical application.
 
 Rather than relying on ready-made image-processing functions, the image manipulation operations are implemented using C and direct pixel manipulation.
 
-Author
+## Author
 
-Abdullah Khabbab Tasib
+**Abdullah Khabbab Tasib**
 
 GitHub: https://github.com/tasib-dev
 
 Repository: https://github.com/tasib-dev/image-editor
 
-License
+## License
 
 This project was developed for educational purposes.
