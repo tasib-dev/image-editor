@@ -23,6 +23,24 @@ The application works with **24-bit uncompressed BMP images** and provides sever
 - Multi-step undo
 - Error handling for invalid operations and inputs
 
+## Screenshots
+
+### Main Interface
+
+<img src="screenshots/main.png" alt="Main Interface" width="800">
+
+### Grayscale
+
+<img src="screenshots/grayscale.png" alt="Grayscale Operation" width="800">
+
+### Brightness Adjustment
+
+<img src="screenshots/brightness.png" alt="Brightness Adjustment" width="800">
+
+### Crop Tool
+
+<img src="screenshots/crop.png" alt="Crop Tool" width="800">
+
 ## Technologies
 
 - C
@@ -62,6 +80,12 @@ image-editor/
 │
 ├── test_images/
 │   └── ...
+│
+├── screenshots/
+│   ├── main.png
+│   ├── grayscale.png
+│   ├── brightness.png
+│   └── crop.png
 │
 ├── .gitignore
 ├── Makefile
@@ -285,7 +309,7 @@ make
 
 This creates the executable:
 
-```text
+```bash
 ./image-editor
 ```
 
